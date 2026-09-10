@@ -1,6 +1,6 @@
 # Sky Infrastructure — Terraform + Docker + Yandex Cloud
 
-Итоговый проект по модулям **«Виртуализация и контейнеризация»** и **«Облачная инфраструктура. Terraform»**.
+ **«Облачная инфраструктура. Terraform»**.
 
 Развёртывание web-приложения в Yandex Cloud с использованием Infrastructure as Code (Terraform), Docker и Docker Compose.
 
@@ -112,7 +112,7 @@
 | Container Registry | `app-registry` | Реестр образов |
 | Репозиторий | `<registry_id>/app` | Для образа приложения |
 | Сервисный аккаунт | `vm-sa` | Для доступа VM к Registry |
-| VM | `app-vm` | 2 vCPU, 2 GB RAM, Ubuntu 22.04 |
+| VM | app-vm | 2 vCPU, 2 GB RAM, Ubuntu 20.04 LTS |
 
 ---
 
@@ -275,33 +275,19 @@ mysql -h <FQDN> -u app_user -p app_db
 
 ## 📸 Скриншоты
 
-### 1. Terraform apply — успешное создание инфраструктуры
+###  Terraform apply — успешное создание инфраструктуры
 
-![Terraform apply](screenshots/01-terraform-apply.png)
+![Terraform apply](https://github.com/user-attachments/assets/5bb2e4cc-564d-4bcd-8ef2-9ddc7f858421)
 
-### 2. Виртуальная машина создана
 
-![VM list](screenshots/02-vm-list.png)
+###  Cloud-init выполнен, Docker работает
 
-### 3. MySQL кластер создан
+![Docker ps](https://github.com/user-attachments/assets/62ec0d1c-434c-43c5-ab09-f57bd02a2c72)
 
-![MySQL cluster](screenshots/03-mysql-cluster.png)
+###  Приложение работает в браузере
 
-### 4. Container Registry с образом
+![App](https://github.com/user-attachments/assets/dc249f90-272c-452a-acef-1f6717d0b7d3)
 
-![Registry](screenshots/04-registry.png)
-
-### 5. Cloud-init выполнен, Docker работает
-
-![Docker ps](screenshots/05-docker-ps.png)
-
-### 6. Приложение работает в браузере
-
-![App](screenshots/06-app-browser.png)
-
-### 7. Структура репозитория на GitHub
-
-![Repo](screenshots/07-github-repo.png)
 
 ---
 
