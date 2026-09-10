@@ -18,3 +18,21 @@ variable "sa_key_file" {
   description = "Path to service account authorized key file"
   default     = "/Users/michaelkochnev/sa-key.json"
 }
+
+variable "db_name" {
+  type        = string
+  description = "MySQL database name"
+  default     = "app_db"
+}
+
+variable "db_user" {
+  type        = string
+  description = "MySQL user name"
+  default     = "app_user"
+}
+
+variable "db_password" {
+  type        = string
+  description = "MySQL user password"
+  sensitive   = true
+}
