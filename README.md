@@ -1,5 +1,3 @@
-# Sky Infrastructure — Terraform + Docker + Yandex Cloud
-
  **«Облачная инфраструктура. Terraform»**.
 
 Развёртывание web-приложения в Yandex Cloud с использованием Infrastructure as Code (Terraform), Docker и Docker Compose.
@@ -378,8 +376,3 @@ terraform apply -replace=yandex_compute_instance.app_vm
 **Michael Kochnev**
 - GitHub: [@michaelkoch51](https://github.com/michaelkoch51)
 
----
-
-## 📝 Лицензия
-
-Учебный проект. Свободное использование в образовательных целях.
