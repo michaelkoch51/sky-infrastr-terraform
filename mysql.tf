@@ -44,5 +44,6 @@ resource "yandex_mdb_mysql_user" "app_user" {
 
   permission {
     database_name = yandex_mdb_mysql_database.app_db.name
+    roles         = ["ALL"]
   }
 }
