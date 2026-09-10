@@ -1,0 +1,7 @@
+# Скопируй этот файл в terraform.tfvars и заполни своими значениями.
+# terraform.tfvars НЕ коммитится в Git!
+
+cloud_id     = "b1gca93klbl4pf1m344h"
+folder_id    = "b1g12jnkavef24dh5fcn"
+default_zone = "ru-central1-a"
+sa_key_file  = "/Users/michaelkochnev/sa-key.json"
