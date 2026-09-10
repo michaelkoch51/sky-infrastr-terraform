@@ -11,7 +11,7 @@ packages:
   - jq
 
 write_files:
-  # Файл .env для docker-compose с параметрами БД
+  # .env для docker-compose (параметры БД и Registry)
   - path: /opt/app/.env
     permissions: '0600'
     owner: root:root
@@ -44,7 +44,7 @@ write_files:
             DB_USER: ${DB_USER}
             DB_PASSWORD: ${DB_PASSWORD}
 
-  # Скрипт запуска приложения
+  # Скрипт запуска
   - path: /opt/app/start.sh
     permissions: '0755'
     owner: root:root
@@ -54,9 +54,9 @@ write_files:
       cd /opt/app
 
       # Ждём, пока сеть и metadata-сервис будут готовы
-      sleep 10
+      sleep 15
 
-      # Получаем IAM-токен через metadata-сервис (SA привязан к VM)
+      # Получаем IAM-токен через metadata-сервис (работает, т.к. у VM есть SA)
       IAM_TOKEN=$(curl -s -H "Metadata-Flavor: Google" \
         "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token" \
         | jq -r .access_token)
@@ -65,7 +65,7 @@ write_files:
       echo "$IAM_TOKEN" | docker login --username iam --password-stdin cr.yandex
 
       # Запускаем приложение
-      docker-compose up -d
+      docker compose up -d
 
 runcmd:
   # Установка Docker
@@ -82,4 +82,4 @@ runcmd:
   # Запуск приложения
   - bash /opt/app/start.sh
 
-final_message: "Cloud-init завершён. Приложение должно быть доступно на порту 80."
+final_message: "Cloud-init завершён. Приложение: http://$(curl -s http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H 'Metadata-Flavor: Google')"
