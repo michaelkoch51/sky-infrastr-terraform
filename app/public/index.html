@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terraform App</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .status.loading { background: #fff3cd; color: #856404; }
+    .status.ok { background: #d4edda; color: #155724; }
+    .status.error { background: #f8d7da; color: #721c24; }
+    .info {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #666; font-size: 14px; }
+    .info-value { color: #333; font-weight: 500; font-family: monospace; }
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+    button:hover { background: #5568d3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Hello from Yandex Cloud!</h1>
+    <p class="subtitle">Приложение развёрнуто через Terraform + Docker</p>
+
+    <div id="status" class="status loading">Проверка подключения к MySQL...</div>
+
+    <div id="info" class="info" style="display: none;">
+      <div class="info-row">
+        <span class="info-label">MySQL версия:</span>
+        <span class="info-value" id="mysql-version">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Время сервера БД:</span>
+        <span class="info-value" id="server-time">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Таблиц в БД:</span>
+        <span class="info-value" id="tables-count">—</span>
+      </div>
+    </div>
+
+    <button onclick="checkDb()">🔄 Проверить ещё раз</button>
+  </div>
+
+  <script>
+    async function checkDb() {
+      const status = document.getElementById('status');
+      const info = document.getElementById('info');
+
+      status.className = 'status loading';
+      status.textContent = 'Проверка подключения к MySQL...';
+      info.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/db');
+        const data = await res.json();
+
+        if (data.status === 'connected') {
+          status.className = 'status ok';
+          status.textContent = '✅ Подключение к MySQL работает!';
+          info.style.display = 'block';
+          document.getElementById('mysql-version').textContent = data.mysql_version;
+          document.getElementById('server-time').textContent = data.server_time;
+          document.getElementById('tables-count').textContent = data.tables_count;
+        } else {
+          status.className = 'status error';
+          status.textContent = '❌ Ошибка: ' + data.message;
+        }
+      } catch (err) {
+        status.className = 'status error';
+        status.textContent = '❌ Не удалось подключиться: ' + err.message;
+      }
+    }
+
+    checkDb();
+  </script>
+</body>
+</html>

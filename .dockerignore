@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Terraform
+.terraform
+*.tfstate
+*.tfstate.*
+*.tf
+*.tfvars
+.terraform.lock.hcl
+
+# Node
+app/node_modules
+**/node_modules
+npm-debug.log
+
+# IDE
+.idea
+.vscode
+.DS_Store
+
+# Screenshots
+screenshots/
+
+# Secrets
+*.key
+*.pem
+secrets/
