@@ -36,3 +36,20 @@ variable "db_password" {
   description = "MySQL user password"
   sensitive   = true
 }
+variable "ssh_public_key_path" {
+  type        = string
+  description = "Path to SSH public key"
+  default     = "/Users/michaelkochnev/.ssh/id_ed25519.pub"
+}
+
+variable "vm_user" {
+  type        = string
+  description = "VM admin username"
+  default     = "ubuntu"
+}
+
+variable "vm_image_id" {
+  type        = string
+  description = "Ubuntu 22.04 LTS image ID"
+  default     = "fd8vmcue7aajpmeo39kk"
+}
