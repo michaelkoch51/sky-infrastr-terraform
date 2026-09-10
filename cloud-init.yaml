@@ -2,6 +2,84 @@
 package_update: true
 package_upgrade: false
 
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - jq
+
+write_files:
+  # Файл .env для docker-compose с параметрами БД
+  - path: /opt/app/.env
+    permissions: '0600'
+    owner: root:root
+    content: |
+      REGISTRY_ID=crp0sh95cm4j53d4hm92
+      DB_HOST=rc1a-7qn4ktm8492orudq.mdb.yandexcloud.net
+      DB_PORT=3306
+      DB_NAME=app_db
+      DB_USER=app_user
+      DB_PASSWORD=12345678Qwerty
+
+  # docker-compose.yml
+  - path: /opt/app/docker-compose.yml
+    permissions: '0644'
+    owner: root:root
+    content: |
+      version: "3.8"
+      services:
+        app:
+          image: cr.yandex/${REGISTRY_ID}/app:latest
+          container_name: terraform-app
+          restart: unless-stopped
+          ports:
+            - "80:3000"
+          environment:
+            PORT: 3000
+            DB_HOST: ${DB_HOST}
+            DB_PORT: ${DB_PORT}
+            DB_NAME: ${DB_NAME}
+            DB_USER: ${DB_USER}
+            DB_PASSWORD: ${DB_PASSWORD}
+
+  # Скрипт запуска приложения
+  - path: /opt/app/start.sh
+    permissions: '0755'
+    owner: root:root
+    content: |
+      #!/bin/bash
+      set -e
+      cd /opt/app
+
+      # Ждём, пока сеть и metadata-сервис будут готовы
+      sleep 10
+
+      # Получаем IAM-токен через metadata-сервис (SA привязан к VM)
+      IAM_TOKEN=$(curl -s -H "Metadata-Flavor: Google" \
+        "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token" \
+        | jq -r .access_token)
+
+      # Логинимся в Container Registry
+      echo "$IAM_TOKEN" | docker login --username iam --password-stdin cr.yandex
+
+      # Запускаем приложение
+      docker-compose up -d
+
 runcmd:
-  - echo "Cloud-init работает" > /tmp/cloud-init-ok.txt
-  - hostname > /tmp/hostname.txt
+  # Установка Docker
+  - curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+  - sh /tmp/get-docker.sh
+  - systemctl enable docker
+  - systemctl start docker
+
+  # Установка Docker Compose (v2 как плагин)
+  - mkdir -p /usr/local/lib/docker/cli-plugins
+  - curl -SL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+  - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+  # Запуск приложения
+  - bash /opt/app/start.sh
+
+final_message: "Cloud-init завершён. Приложение должно быть доступно на порту 80."

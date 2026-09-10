@@ -1,11 +1,28 @@
 # ============================================================
 # Виртуальная машина для web-приложения
 # ============================================================
-resource "yandex_compute_instance" "app_vm" {
-  name        = "app-vm"
-  platform_id = "standard-v3"
-  zone        = var.default_zone
+# ============================================================
+# Сервисный аккаунт для VM (для доступа к Container Registry)
+# ============================================================
+resource "yandex_iam_service_account" "vm_sa" {
+  name        = "vm-sa"
+  description = "Service account for VM to pull images from Container Registry"
+}
 
+# Права на чтение образов из Registry
+resource "yandex_container_registry_iam_binding" "vm_sa_puller" {
+  registry_id = yandex_container_registry.app_registry.id
+  role        = "container-registry.images.puller"
+
+  members = [
+    "serviceAccount:${yandex_iam_service_account.vm_sa.id}",
+  ]
+}
+resource "yandex_compute_instance" "app_vm" {
+  name               = "app-vm"
+  platform_id        = "standard-v3"
+  zone               = var.default_zone
+  service_account_id = yandex_iam_service_account.vm_sa.id
   resources {
     cores         = 2
     memory        = 2
